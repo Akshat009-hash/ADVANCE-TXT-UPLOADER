@@ -990,10 +990,14 @@ async def txt_handler(bot: Client, m: Message):
 
 # Ankitshakya
 
-@bot.on_message(filters.command(["spidy"]))
-if not is_authorized(m.from_user.id):
+@bot.on_message(filters.command(["king", "spidy"]))
+async def txt_handler(bot: Client, m: Message):
+    if not is_authorized(m.from_user.id):
         await m.reply_text("🚫 You are not authorized to use this command.")
         return
+
+    await m.delete()
+    ...
 async def txt_handler(bot: Client, m: Message):
     editable = await m.reply_text(f"**🔹Send me the TXT file and wait.**")
     input: Message = await bot.listen(editable.chat.id)
@@ -1257,10 +1261,14 @@ async def txt_handler(bot: Client, m: Message):
 
 # m3u8
 
-@bot.on_message(filters.command(["advance"]))
-if not is_authorized(m.from_user.id):
+@bot.on_message(filters.command(["king", "advance"]))
+async def txt_handler(bot: Client, m: Message):
+    if not is_authorized(m.from_user.id):
         await m.reply_text("🚫 You are not authorized to use this command.")
         return
+
+    await m.delete()
+    ...
 async def txt_handler(bot: Client, m: Message):
     editable = await m.reply_text(f"**🔹Send me the TXT file and wait.**")
     input: Message = await bot.listen(editable.chat.id)
