@@ -41,7 +41,7 @@ def is_authorized(user_id: int) -> bool:
         user_id == OWNER_ID
         or user_id in SUDO_USERS
         or user_id in AUTH_CHANNELS  # ✅ Checks if user_id matches any channel ID
-    )
+    (
 
 
 bot = Client(
@@ -86,7 +86,7 @@ async def sudo_command(bot: Client, message: Message):
     except Exception as e:
         await message.reply_text(f"**Error:** {str(e)}")
     
-)
+
 
 photo = "https://i.postimg.cc/dVY9nL63/IMG-20250426-130510-655.jpg"
 cpphoto = "https://i.postimg.cc/dVY9nL63/IMG-20250426-130510-655.jpg"
