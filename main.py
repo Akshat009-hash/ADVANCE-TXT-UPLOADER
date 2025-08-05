@@ -1266,7 +1266,6 @@ async def txt_handler(bot: Client, m: Message):
     if not is_authorized(m.from_user.id):
         await m.reply_text("🚫 You are not authorized to use this command.")
         return
-
     await m.delete()
     ...
 async def txt_handler(bot: Client, m: Message):
