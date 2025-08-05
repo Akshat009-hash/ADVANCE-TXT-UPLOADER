@@ -41,7 +41,7 @@ def is_authorized(user_id: int) -> bool:
         user_id == OWNER_ID
         or user_id in SUDO_USERS
         or user_id in AUTH_CHANNELS  # ✅ Checks if user_id matches any channel ID
-    (
+    ) 
 
 
 bot = Client(
