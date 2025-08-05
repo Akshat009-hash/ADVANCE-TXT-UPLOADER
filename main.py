@@ -218,7 +218,7 @@ async def restart_handler(_, m):
 
 
 @bot.on_message(filters.command(["king","upload"]) )
-if not is_authorized(m.from_user.id):
+ if not is_authorized(m.from_user.id):
         await m.reply_text("🚫 You are not authorized to use this command.")
         return
 async def txt_handler(bot: Client, m: Message):
