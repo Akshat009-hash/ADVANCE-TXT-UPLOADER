@@ -217,12 +217,14 @@ async def restart_handler(_, m):
     os.execl(sys.executable, sys.executable, *sys.argv)
 
 
-@bot.on_message(filters.command(["king","upload"]) )
- if not is_authorized(m.from_user.id):
+@bot.on_message(filters.command(["king", "upload"]))
+async def txt_handler(bot: Client, m: Message):
+    if not is_authorized(m.from_user.id):
         await m.reply_text("🚫 You are not authorized to use this command.")
         return
-async def txt_handler(bot: Client, m: Message):
+
     await m.delete()
+    ...
     
     editable = await m.reply_text(f"**🔹Hi I am Poweful TXT Downloader📥 Bot.**\n🔹**Send me the TXT file and wait.**")
     input: Message = await bot.listen(editable.chat.id)
