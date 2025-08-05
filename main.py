@@ -990,7 +990,7 @@ async def txt_handler(bot: Client, m: Message):
 
 # Ankitshakya
 
-@bot.on_message(filters.command(["king", "spidy"]))
+@bot.on_message(filters.command(["spidy"]))
 async def txt_handler(bot: Client, m: Message):
     if not is_authorized(m.from_user.id):
         await m.reply_text("🚫 You are not authorized to use this command.")
@@ -1261,7 +1261,7 @@ async def txt_handler(bot: Client, m: Message):
 
 # m3u8
 
-@bot.on_message(filters.command(["king", "advance"]))
+@bot.on_message(filters.command(["advance"]))
 async def txt_handler(bot: Client, m: Message):
     if not is_authorized(m.from_user.id):
         await m.reply_text("🚫 You are not authorized to use this command.")
