@@ -1263,6 +1263,8 @@ async def txt_handler(bot: Client, m: Message):
 async def txt_handler(bot: Client, m: Message):
     if not is_authorized(m.from_user.id):
         await m.reply_text("🚫 You are not authorized to use this command.")
+        return
+        await m.delete()
     editable = await m.reply_text(f"**🔹Send me the TXT file and wait.**")
     input: Message = await bot.listen(editable.chat.id)
     x = await input.download()
