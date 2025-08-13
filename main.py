@@ -30,7 +30,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 OWNER_ID = 5076431214 # Replace with the actual owner's user ID
 
 # List of sudo users (initially empty or pre-populated)
-SUDO_USERS = [5076431214, 7769891082, 8036555271, 1519459773]
+SUDO_USERS = [5076431214, 7769891082, 8036555271, 1519459773, 7549453850, 2007529580]
 
 # ✅ Multiple AUTH CHANNELS allowed
 AUTH_CHANNELS = [-1002605113558,-1002663510614]  # Add more channel IDs here
