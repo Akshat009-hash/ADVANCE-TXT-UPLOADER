@@ -10,7 +10,6 @@ import urllib.parse
 import yt_dlp
 import cloudscraper
 import m3u8
-from hls_handler import *
 import core as helper
 from utils import progress_bar
 from vars import API_ID, API_HASH, BOT_TOKEN
