@@ -1787,4 +1787,63 @@ bot.run()
 if __name__ == "__main__":
     asyncio.run(main())
 
+import os
+import requests
+from pyrogram import Client, filters
+
+# --- Your existing bot setup ---
+bot = Client(
+    "AdvanceUploaderBot",
+    api_id=int(os.getenv("API_ID")),
+    api_hash=os.getenv("API_HASH"),
+    bot_token=os.getenv("BOT_TOKEN")
+)
+
+# --- File download function ---
+def download_file(url: str, output_path: str):
+    response = requests.get(url, stream=True)
+    response.raise_for_status()
+
+    total = int(response.headers.get('content-length', 0))
+    chunk_size = 8192
+    downloaded = 0
+
+    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
+
+    with open(output_path, 'wb') as f:
+        for chunk in response.iter_content(chunk_size=chunk_size):
+            if chunk:
+                f.write(chunk)
+                downloaded += len(chunk)
+                if total:
+                    percent = (downloaded / total) * 100
+                    print(f"\rDownloaded {downloaded}/{total} bytes ({percent:.2f}%)", end='')
+
+    print(f"\n✅ Download complete: {output_path}")
+    return output_path
+
+
+# --- Bot command for downloading ---
+@bot.on_message(filters.command("download") & filters.private)
+async def download_handler(client, message):
+    if len(message.command) < 2:
+        await message.reply_text("❌ Usage: `/download <url>`", quote=True)
+        return
+    
+    url = message.command[1]
+    filename = os.path.basename(url.split("?")[0])  # clean filename
+    output_path = f"downloads/{filename}"
+
+    await message.reply_text(f"📥 Downloading `{filename}` ...", quote=True)
+
+    try:
+        file_path = download_file(url, output_path)
+        await message.reply_document(file_path, caption="✅ Here is your file")
+    except Exception as e:
+        await message.reply_text(f"⚠️ Error: `{e}`", quote=True)
+
+
+# --- Start Bot ---
+bot.run()
+
 
