@@ -1789,61 +1789,126 @@ if __name__ == "__main__":
 
 import os
 import requests
+import asyncio
+import subprocess
 from pyrogram import Client, filters
+from pyrogram.types import Message
+from threading import Event
 
-# --- Your existing bot setup ---
+# ---------------- BOT SETUP ----------------
+API_ID = int(os.getenv("API_ID"))
+API_HASH = os.getenv("API_HASH")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+
 bot = Client(
-    "AdvanceUploaderBot",
-    api_id=int(os.getenv("API_ID")),
-    api_hash=os.getenv("API_HASH"),
-    bot_token=os.getenv("BOT_TOKEN")
+    "AdvanceDownloaderBot",
+    api_id=API_ID,
+    api_hash=API_HASH,
+    bot_token=BOT_TOKEN
 )
 
-# --- File download function ---
-def download_file(url: str, output_path: str):
+STOP_EVENTS = {}
+
+# ---------------- HLS / DASH DOWNLOAD ----------------
+async def download_stream(url, output_path, message):
+    cmd = [
+        "yt-dlp",
+        "-o", output_path,
+        url
+    ]
+
+    process = await asyncio.create_subprocess_exec(
+        *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+    )
+
+    await message.edit_text("📡 Starting stream download (HLS/DASH)...")
+
+    stdout, stderr = await process.communicate()
+
+    if process.returncode == 0:
+        return output_path
+    else:
+        await message.reply_text(f"⚠️ Error:\n```{stderr.decode()}```")
+        return None
+
+# ---------------- NORMAL FILE DOWNLOAD ----------------
+async def download_file(url: str, output_path: str, chat_id: int, message: Message):
     response = requests.get(url, stream=True)
     response.raise_for_status()
-
     total = int(response.headers.get('content-length', 0))
     chunk_size = 8192
     downloaded = 0
 
-    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
+    stop_event = STOP_EVENTS.get(chat_id, Event())
+    STOP_EVENTS[chat_id] = stop_event
 
     with open(output_path, 'wb') as f:
         for chunk in response.iter_content(chunk_size=chunk_size):
+            if stop_event.is_set():
+                await message.reply_text("⏹ Download stopped by user.")
+                f.close()
+                os.remove(output_path)
+                return None
             if chunk:
                 f.write(chunk)
                 downloaded += len(chunk)
                 if total:
                     percent = (downloaded / total) * 100
-                    print(f"\rDownloaded {downloaded}/{total} bytes ({percent:.2f}%)", end='')
-
-    print(f"\n✅ Download complete: {output_path}")
+                    bar = "█" * int(percent // 5) + "░" * (20 - int(percent // 5))
+                    await message.edit_text(
+                        f"📥 Downloading...\n\n[{bar}] {percent:.2f}%\n"
+                        f"{downloaded/1024/1024:.2f}MB / {total/1024/1024:.2f}MB"
+                    )
     return output_path
 
-
-# --- Bot command for downloading ---
+# ---------------- DOWNLOAD COMMAND ----------------
 @bot.on_message(filters.command("download") & filters.private)
-async def download_handler(client, message):
+async def download_handler(client: Client, message: Message):
     if len(message.command) < 2:
         await message.reply_text("❌ Usage: `/download <url>`", quote=True)
         return
-    
+
     url = message.command[1]
-    filename = os.path.basename(url.split("?")[0])  # clean filename
+    filename = os.path.basename(url.split("?")[0]) or "file"
     output_path = f"downloads/{filename}"
 
-    await message.reply_text(f"📥 Downloading `{filename}` ...", quote=True)
+    msg = await message.reply_text(f"📥 Starting download: `{filename}`")
 
     try:
-        file_path = download_file(url, output_path)
-        await message.reply_document(file_path, caption="✅ Here is your file")
+        if url.endswith(".m3u8") or ".m3u8" in url or ".mpd" in url:
+            file_path = await download_stream(url, output_path, msg)
+        else:
+            file_path = await download_file(url, output_path, message.chat.id, msg)
+
+        if not file_path:
+            return
+
+        ext = os.path.splitext(file_path)[1].lower()
+        caption = "✅ File Downloaded"
+
+        if ext in [".mp4", ".mkv"]:
+            caption = f"🎬 Video ID: {message.chat.id}\n✅ Downloaded Successfully"
+        elif ext in [".pdf"]:
+            caption = f"📄 PDF ID: {message.chat.id}\n✅ Downloaded Successfully"
+        elif ext in [".txt"]:
+            caption = f"📜 TXT File ID: {message.chat.id}\n✅ Downloaded Successfully"
+
+        await message.reply_document(file_path, caption=caption)
+        os.remove(file_path)
+
     except Exception as e:
         await message.reply_text(f"⚠️ Error: `{e}`", quote=True)
 
+# ---------------- STOP COMMAND ----------------
+@bot.on_message(filters.command("stop") & filters.private)
+async def stop_handler(client: Client, message: Message):
+    chat_id = message.chat.id
+    if chat_id in STOP_EVENTS:
+        STOP_EVENTS[chat_id].set()
+        await message.reply_text("🛑 Stopping download...")
+    else:
+        await message.reply_text("⚠️ No active download found.")
 
-# --- Start Bot ---
-bot.run()
-
-
+# ---------------- RUN BOT ----------------
+if __name__ == "__main__":
+    bot.run()
