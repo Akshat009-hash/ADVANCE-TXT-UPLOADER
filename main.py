@@ -1427,34 +1427,31 @@ async def txt_handler(bot: Client, m: Message):
                 ytf = f"b[height<={raw_text2}][ext=mp4]/bv[height<={raw_text2}][ext=mp4]+ba[ext=m4a]/b[ext=mp4]"
             else:
                 ytf = f"b[height<={raw_text2}]/bv[height<={raw_text2}]+ba/b/bv+ba"
-            
-            if "jw-prod" in url:
-                cmd = f'yt-dlp -o "{name}.mp4" "{url}"'
+            elif "jw-prod" in url:
+        cmd = f'yt-dlp -o "{name}.mp4" "{url}"'
 
-            elif "youtube.com" in url or "youtu.be" in url:
-                cmd = f'yt-dlp --cookies youtube_cookies.txt -f "{ytf}" "{url}" -o "{name}".mp4'
+    elif "youtube.com" in url or "youtu.be" in url:
+        cmd = f'yt-dlp --cookies youtube_cookies.txt -f "{ytf}" "{url}" -o "{name}.mp4"'
 
-            else:
-                cmd = f'yt-dlp -f "{ytf}" "{url}" -o "{name}.mp4"'
-
-
-elif ".m3u8" in url and "KEY=" in raw_text:   # agar .m3u8 + HEX key diya ho
+    elif ".m3u8" in url and "KEY=" in raw_text:   # agar .m3u8 + HEX key diya ho
         url_match = re.search(r'URL=(.+)', raw_text)
         key_match = re.search(r'KEY=([0-9a-fA-F]+)', raw_text)
 
         if url_match and key_match:
             hls_url = url_match.group(1).strip()
             hls_key = key_match.group(1).strip()
-
-            # yt-dlp command with HEX key
             cmd = f'yt-dlp "{hls_url}" --allow-unplayable-formats --extractor-args "generic:hls_key={hls_key}" -o "{name}.mp4"'
         else:
             cmd = None
-            
-           
-             try:  
-                
-                cc = f'**🎥 VID_ID: {str(count).zfill(3)}.\n\n Title: {name1} ❤️ {res}.mkv\n\n📚 Batch Name: {b_name}\n\n📥 Extracted By : {CR}\n\n**━━━━━✦  ❤️ ✦━━━━━**'
+
+    elif ".m3u8" in url:
+        # purana m3u8 handling
+        pass
+
+    # === yaha tak sirf if/elif chain hai ===
+
+      try:
+               cc = f'**🎥 VID_ID: {str(count).zfill(3)}.\n\n Title: {name1} ❤️ {res}.mkv\n\n📚 Batch Name: {b_name}\n\n📥 Extracted By : {CR}\n\n**━━━━━✦  ❤️ ✦━━━━━**'
                 cc1 = f'**📝 PDF_ID: {str(count).zfill(3)}.\n\n Title: {name1} ❤️.pdf\n\n📚 Batch Name: {b_name}\n\n📥 Extracted By : {CR}\n\n**━━━━━✦  ❤️  ✦━━━━━**'
                     
                 
