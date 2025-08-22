@@ -1437,6 +1437,24 @@ async def txt_handler(bot: Client, m: Message):
             else:
                 cmd = f'yt-dlp -f "{ytf}" "{url}" -o "{name}.mp4"'
 
+           
+           elif ".m3u8" in url and "KEY=" in raw_text:   # agar .m3u8 + HEX key diya ho url_match = re.search(r'URL=(.+)', raw_text) key_match = re.search(r'KEY=([0-9a-fA-F]+)', raw_text)
+
+    if url_match and key_match:
+         hls_url = url_match.group(1).strip()
+          hls_key = key_match.group(1).strip()
+
+    # yt-dlp command with HEX key
+    cmd = f'yt-dlp "{hls_url}" --allow-unplayable-formats --extractor-args "generic:hls_key={hls_key}" -o "{name}.mp4"'
+else:
+    cmd = None
+
+elif ".m3u8" in url: # aapka jo purana m3u8 handling code tha wo yahan rahega pass
+
+... (baaki code same rahega)
+
+
+
             try:  
                 
                 cc = f'**🎥 VID_ID: {str(count).zfill(3)}.\n\n Title: {name1} ❤️ {res}.mkv\n\n📚 Batch Name: {b_name}\n\n📥 Extracted By : {CR}\n\n**━━━━━✦  ❤️ ✦━━━━━**'
