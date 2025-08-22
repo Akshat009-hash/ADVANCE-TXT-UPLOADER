@@ -1403,52 +1403,49 @@ async def txt_handler(bot: Client, m: Message):
             if "edge.api.brightcove.com" in url:
                 bcov = 'bcov_auth=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MjQyMzg3OTEsImNvbiI6eyJpc0FkbWluIjpmYWxzZSwiYXVzZXIiOiJVMFZ6TkdGU2NuQlZjR3h5TkZwV09FYzBURGxOZHowOSIsImlkIjoiZEUxbmNuZFBNblJqVEROVmFWTlFWbXhRTkhoS2R6MDkiLCJmaXJzdF9uYW1lIjoiYVcxV05ITjVSemR6Vm10ak1WUlBSRkF5ZVNzM1VUMDkiLCJlbWFpbCI6Ik5Ga3hNVWhxUXpRNFJ6VlhiR0ppWTJoUk0wMVdNR0pVTlU5clJXSkRWbXRMTTBSU2FHRnhURTFTUlQwPSIsInBob25lIjoiVUhVMFZrOWFTbmQ1ZVcwd1pqUTViRzVSYVc5aGR6MDkiLCJhdmF0YXIiOiJLM1ZzY1M4elMwcDBRbmxrYms4M1JEbHZla05pVVQwOSIsInJlZmVycmFsX2NvZGUiOiJOalZFYzBkM1IyNTBSM3B3VUZWbVRtbHFRVXAwVVQwOSIsImRldmljZV90eXBlIjoiYW5kcm9pZCIsImRldmljZV92ZXJzaW9uIjoiUShBbmRyb2lkIDEwLjApIiwiZGV2aWNlX21vZGVsIjoiU2Ftc3VuZyBTTS1TOTE4QiIsInJlbW90ZV9hZGRyIjoiNTQuMjI2LjI1NS4xNjMsIDU0LjIyNi4yNTUuMTYzIn19.snDdd-PbaoC42OUhn5SJaEGxq0VzfdzO49WTmYgTx8ra_Lz66GySZykpd2SxIZCnrKR6-R10F5sUSrKATv1CDk9ruj_ltCjEkcRq8mAqAytDcEBp72-W0Z7DtGi8LdnY7Vd9Kpaf499P-y3-godolS_7ixClcYOnWxe2nSVD5C9c5HkyisrHTvf6NFAuQC_FD3TzByldbPVKK0ag1UnHRavX8MtttjshnRhv5gJs5DQWj4Ir_dkMcJ4JaVZO3z8j0OxVLjnmuaRBujT-1pavsr1CCzjTbAcBvdjUfvzEhObWfA1-Vl5Y4bUgRHhl1U-0hne4-5fF0aouyu71Y6W0eg'
                 url = url.split("bcov_auth")[0]+bcov
-
-            if 'workers.dev' in url:
-             vid_id = url.split("cloudfront.net/")[1].split("/")[0]
-             print(vid_id)
-             url = f"https://madxapi-d0cbf6ac738c.herokuapp.com/{vid_id}/master.m3u8?token={raw_text4}"
                 
-            if 'psitoffers.store' in url:
-             vid_id = url.split("vid=")[1].split("&")[0]
-             print(f"vid_id = {vid_id}")
-             url =  f"https://madxapi-d0cbf6ac738c.herokuapp.com/{vid_id}/master.m3u8?token={raw_text4}"
+            if "workers.dev" in url:
+    vid_id = url.split("cloudfront.net/")[1].split("/")[0]
+    print(vid_id)
+    url = f"https://madxapi-d0cbf6ac738c.herokuapp.com/{vid_id}/master.m3u8?token={raw_text4}"
 
-            if '/master.m3u8' in url:
-             vid_id =  url.split("/")[-2]
-             url =  f"https://madxapi-d0cbf6ac738c.herokuapp.com/{vid_id}/master.m3u8?token={raw_text4}"
+elif "psitoffers.store" in url:
+    vid_id = url.split("vid=")[1].split("&")[0]
+    print(vid_id)
+    url = f"https://madxapi-d0cbf6ac738c.herokuapp.com/{vid_id}/master.m3u8?token={raw_text4}"
 
+elif "/master.m3u8" in url:
+    vid_id = url.split("/")[-2]
+    url = f"https://madxapi-d0cbf6ac738c.herokuapp.com/{vid_id}/master.m3u8?token={raw_text4}"
 
-            if 'sec-prod-mediacdn.pw.live' in url:
-             vid_id = url.split("sec-prod-mediacdn.pw.live/")[1].split("/")[0]
-             url = f"https://pwplayer-0e2dbbdc0989.herokuapp.com/player?url=https://d1d34p8vz63oiq.cloudfront.net/{vid_id}/master.mpd?token={raw_text4}"
+elif "sec-prod-mediacdn.pw.live" in url:
+    vid_id = url.split("sec-prod-mediacdn.pw.live/")[1].split("/")[0]
+    url = f"https://pwplayer-0e2dbbdc0989.herokuapp.com/player?url=https://d1d34p8vz63oiq.cloudfront.net/{vid_id}/master.m3u8?token={raw_text4}"
 
-            if "youtu" in url:
-                ytf = f"b[height<={raw_text2}][ext=mp4]/bv[height<={raw_text2}][ext=mp4]+ba[ext=m4a]/b[ext=mp4]"
-            else:
-                ytf = f"b[height<={raw_text2}]/bv[height<={raw_text2}]+ba/b/bv+ba"
-            elif "jw-prod" in url:
-        cmd = f'yt-dlp -o "{name}.mp4" "{url}"'
+elif "youtu" in url:
+    ytf = f"[height<={raw_text2}]/bv*[height<={raw_text2}][ext=mp4]/ba[ext=m4a]/b[ext=mp4]"
 
-    elif "youtube.com" in url or "youtu.be" in url:
-        cmd = f'yt-dlp --cookies youtube_cookies.txt -f "{ytf}" "{url}" -o "{name}.mp4"'
+elif "jw-prod" in url:
+    cmd = f'yt-dlp -o "{name}.mp4" "{url}"'
 
-    elif ".m3u8" in url and "KEY=" in raw_text:   # agar .m3u8 + HEX key diya ho
-        url_match = re.search(r'URL=(.+)', raw_text)
-        key_match = re.search(r'KEY=([0-9a-fA-F]+)', raw_text)
+elif "youtube.com" in url or "youtu.be" in url:
+    cmd = f'yt-dlp --cookies youtube_cookies.txt -f "{ytf}" "{url}" -o "{name}.mp4"'
 
-        if url_match and key_match:
-            hls_url = url_match.group(1).strip()
-            hls_key = key_match.group(1).strip()
-            cmd = f'yt-dlp "{hls_url}" --allow-unplayable-formats --extractor-args "generic:hls_key={hls_key}" -o "{name}.mp4"'
-        else:
-            cmd = None
+elif ".m3u8" in url and "KEY=" in raw_text:   # agar .m3u8 + HEX key diya ho
+    url_match = re.search(r'URL=(.+)', raw_text)
+    key_match = re.search(r'KEY=([0-9a-fA-F]+)', raw_text)
 
-    elif ".m3u8" in url:
-        # purana m3u8 handling
-        pass
+    if url_match and key_match:
+        hls_url = url_match.group(1).strip()
+        hls_key = key_match.group(1).strip()
+        cmd = f'yt-dlp "{hls_url}" --allow-unplayable-formats --extractor-args "generic:hls_key={hls_key}" -o "{name}.mp4"'
+    else:
+        cmd = None
 
-    # === yaha tak sirf if/elif chain hai ===
+elif ".m3u8" in url:
+    # purana m3u8 handling code
+    pass
+            
 
       try:
                cc = f'**🎥 VID_ID: {str(count).zfill(3)}.\n\n Title: {name1} ❤️ {res}.mkv\n\n📚 Batch Name: {b_name}\n\n📥 Extracted By : {CR}\n\n**━━━━━✦  ❤️ ✦━━━━━**'
